@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" role="img" aria-label="Ascendra Network">
+  <path d="M60 12 L108 108 H84 L74 84 H46 L36 108 H12 L60 12Z" fill="#0B1C2C"/>
+  <path d="M52 70 H68 L60 50 L52 70Z" fill="#0B1C2C"/>
+  <path d="M22 96 L92 28" stroke="#1FA97A" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="34" cy="86" r="5.5" fill="#F4F7F5" stroke="#1FA97A" stroke-width="3.5"/>
+  <circle cx="52" cy="70" r="5.5" fill="#F4F7F5" stroke="#1FA97A" stroke-width="3.5"/>
+  <circle cx="70" cy="52" r="5.5" fill="#F4F7F5" stroke="#1FA97A" stroke-width="3.5"/>
+  <circle cx="90" cy="30" r="6.5" fill="#F4F7F5" stroke="#C9A96E" stroke-width="3.5"/>
+</svg>
