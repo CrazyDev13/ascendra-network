@@ -171,7 +171,8 @@ export default function App() {
   const [openFaq, setOpenFaq] = useState(0);
   const [navOpen, setNavOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [contactStatus, setContactStatus] = useState<"idle" | "sent">("idle");
+  const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [contactError, setContactError] = useState("");
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -181,23 +182,44 @@ export default function App() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  function handleContactSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleContactSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    const name = String(data.get("name") || "").trim();
-    const email = String(data.get("email") || "").trim();
-    const company = String(data.get("company") || "").trim();
-    const message = String(data.get("message") || "").trim();
+    const payload = {
+      name: String(data.get("name") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      company: String(data.get("company") || "").trim(),
+      message: String(data.get("message") || "").trim(),
+    };
 
-    const subject = encodeURIComponent(`Ascendra Network partnership inquiry — ${name}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nCompany / Website: ${company || "—"}\n\nMessage:\n${message}`
-    );
+    setContactStatus("sending");
+    setContactError("");
 
-    window.location.href = `mailto:partners@ascendranetwork.com?subject=${subject}&body=${body}`;
-    setContactStatus("sent");
-    form.reset();
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = (await response.json().catch(() => null)) as
+        | { ok?: boolean; error?: string }
+        | null;
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || "Unable to send your message right now.");
+      }
+
+      setContactStatus("sent");
+      form.reset();
+    } catch (error) {
+      setContactStatus("error");
+      setContactError(
+        error instanceof Error
+          ? error.message
+          : "Unable to send your message right now. Please email partners@ascendranetwork.com."
+      );
+    }
   }
 
   return (
@@ -546,12 +568,17 @@ export default function App() {
                   placeholder="Share your GEOs, traffic sources, and monthly volume."
                 />
               </label>
-              <button className="btn btn-primary" type="submit">
-                Send message
+              <button className="btn btn-primary" type="submit" disabled={contactStatus === "sending"}>
+                {contactStatus === "sending" ? "Sending…" : "Send message"}
               </button>
               {contactStatus === "sent" ? (
                 <p className="contact-success" role="status">
-                  Opening your email client… If nothing opens, write us at partners@ascendranetwork.com.
+                  Thanks — your message was sent. Our affiliate team will follow up shortly.
+                </p>
+              ) : null}
+              {contactStatus === "error" ? (
+                <p className="contact-error" role="alert">
+                  {contactError}
                 </p>
               ) : null}
             </motion.form>

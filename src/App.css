@@ -639,9 +639,20 @@
   margin-top: 0.25rem;
 }
 
+.contact-form .btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
+
 .contact-success {
   font-size: 0.9rem;
   color: var(--emerald-deep);
+}
+
+.contact-error {
+  font-size: 0.9rem;
+  color: #b42318;
 }
 
 .site-footer {
